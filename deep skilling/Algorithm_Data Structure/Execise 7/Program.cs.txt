@@ -1,0 +1,44 @@
+using System;
+
+public class FinancialForecasting
+{
+    [cite_start]// Simple Recursive Approach [cite: 96]
+    public static double CalculateFutureValue(double presentValue, double growthRate, int periods)
+    {
+        // Base Case
+        if (periods == 0) return presentValue;
+        
+        [cite_start]// Recursive step: FV = Previous Year Value * (1 + growthRate) [cite: 98]
+        return CalculateFutureValue(presentValue, growthRate, periods - 1) * (1 + growthRate);
+    }
+
+    [cite_start]// Optimized Recursive Approach using Memoization 
+    public static double OptimizedFutureValue(double presentValue, double growthRate, int periods, double[] memo)
+    {
+        // Base Case
+        if (periods == 0) return presentValue;
+        
+        // If the value has already been calculated, return it from the cache
+        if (memo[periods] != 0) return memo[periods];
+        
+        // Cache the result before returning
+        memo[periods] = OptimizedFutureValue(presentValue, growthRate, periods - 1, memo) * (1 + growthRate);
+        return memo[periods];
+    }
+
+    public static void Main(string[] args)
+    {
+        double principal = 10000; // Starting Amount [cite: 91]
+        double rate = 0.05;       // 5% Annual Growth Rate [cite: 98]
+        int years = 5;            // Projection Window Target
+
+        // Testing standard recursion
+        double recursiveResult = CalculateFutureValue(principal, rate, years);
+        Console.WriteLine($"Recursive Forecast Value after {years} years: ${recursiveResult:F2}");
+
+        // Testing optimized recursion with memoization
+        double[] memoTable = new double[years + 1];
+        double memoizedResult = OptimizedFutureValue(principal, rate, years, memoTable);
+        Console.WriteLine($"Optimized Forecast Value after {years} years: ${memoizedResult:F2}");
+    }
+}
