@@ -1,0 +1,98 @@
+using System;
+
+class Product : IComparable<Product>
+{
+    public string ProductId { get; set; }
+    public string ProductName { get; set; }
+    public string Category { get; set; }
+
+    public Product(string productId, string productName, string category)
+    {
+        ProductId = productId;
+        ProductName = productName;
+        Category = category;
+    }
+
+    // Implement IComparable to allow sorting by ProductId
+    public int CompareTo(Product other)
+    {
+        if (other == null) return 1;
+        return string.Compare(this.ProductId, other.ProductId, StringComparison.Ordinal);
+    }
+
+    public override string _toString()
+    {
+        return $"[{ProductId} | {ProductName}]";
+    }
+}
+
+class SearchEngine
+{
+    // Linear Search: works on unsorted arrays
+    public static Product LinearSearch(Product[] list, string targetId)
+    {
+        foreach (Product product in list)
+        {
+            if (product.ProductId == targetId)
+            {
+                return product;
+            }
+        }
+        return null;
+    }
+
+    // Binary Search: requires the array to be sorted
+    public static Product BinarySearch(Product[] sortedList, string targetId)
+    {
+        int low = 0;
+        int high = sortedList.Length - 1;
+
+        while (low <= high)
+        {
+            int mid = low + (high - low) / 2;
+            int comparison = string.Compare(sortedList[mid].ProductId, targetId, StringComparison.Ordinal);
+
+            if (comparison == 0)
+            {
+                return sortedList[mid];
+            }
+            else if (comparison < 0)
+            {
+                low = mid + 1;
+            }
+            else
+            {
+                high = mid - 1;
+            }
+        }
+        return null;
+    }
+
+    static void Main(string[] args)
+    {
+        Product[] products = new Product[]
+        {
+            new Product("P305", "Mechanical Keyboard", "Accessories"),
+            new Product("P101", "Wireless Mouse", "Accessories"),
+            new Product("P202", "Gaming Monitor", "Electronics"),
+            new Product("P044", "USB-C Cable", "Cables")
+        };
+
+        // Linear Search on unsorted data
+        Product linearResult = LinearSearch(products, "P202");
+        Console.WriteLine("Linear Search Result: " + (linearResult != null ? linearResult._toString() : "Not Found"));
+
+        // Binary Search requires array to be sorted by search key
+        Array.Sort(products);
+        
+        Console.Write("Sorted Array for Binary Search: ");
+        foreach (var p in products)
+        {
+            Console.Write(p._toString() + " ");
+        }
+        Console.WriteLine();
+
+        Product binaryResult = BinarySearch(products, "P202");
+        Console.WriteLine("Binary Search Result: " + (binaryResult != null ? binaryResult._toString() : "Not Found"));
+    }
+}
